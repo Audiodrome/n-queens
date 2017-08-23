@@ -30,6 +30,7 @@
     },
 
     _getFirstRowColumnIndexForMajorDiagonalOn: function(rowIndex, colIndex) {
+      console.log('Column', colIndex, 'row', rowIndex, 'delta', colIndex-rowIndex)
       return colIndex - rowIndex;
     },
 
@@ -43,6 +44,8 @@
 
     hasAnyQueenConflictsOn: function(rowIndex, colIndex) {
       return (
+        // this.hasAnyRowConflicts() ||
+        // this.hasAnyColConflicts() ||
         this.hasRowConflictAt(rowIndex) ||
         this.hasColConflictAt(colIndex) ||
         this.hasMajorDiagonalConflictAt(this._getFirstRowColumnIndexForMajorDiagonalOn(rowIndex, colIndex)) ||
@@ -79,11 +82,43 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
+      // console.log(this.attributes[rowIndex]);
+      var counter = 0;
+      this.attributes[rowIndex].forEach((piece) => {
+        if (piece === 1) {
+          counter += 1;
+        }
+        // console.log(counter);
+      });
+      if (counter > 1) {
+        return true;
+      }
+      // console.log(this.attributes);
+      // console.log(this.attributes);
+      // var board = this.attributes;
+      // var counter = 0;
+      // for (var i = 0; i < board[rowIndex].length; i++) {        
+      //   if (board[rowIndex][i] === 1) { counter++; }
+      //   if (counter > 1) { return true; }            
+      // }
+      
       return false; // fixme
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
+      
+      var flag = false;
+      for (var key in this.attributes) {
+        key = parseInt(key);
+        if (key >= 0) {
+          if (this.hasRowConflictAt(key)) {
+            return true;
+          }
+          // return this.hasRowConflictAt(key);
+        } 
+      }
+  
       return false; // fixme
     },
 
@@ -94,11 +129,31 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
+      
+      var boardObj = this;
+      var counter = 0;
+      Object.keys(this.attributes).forEach((row) => {
+        if (boardObj.attributes[row][colIndex] === 1) { counter += 1; }
+      });
+      
+      if (counter > 1) { return true; }
+      
+      // var board = this.attributes;
+      // var counter = 0;
+      // for (var i = 0; i < this.attributes.n; i++) {
+      //   if (board[i][colIndex] === 1) { counter += 1; }
+      //   if (counter > 1) { return true; }  
+      // }
       return false; // fixme
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
+      for (var i = 0; i < this.attributes.n; i++) {
+        if (this.hasColConflictAt(i)) {
+          return true;
+        }
+      }
       return false; // fixme
     },
 
@@ -109,6 +164,21 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
+      let counter = 0;
+      let rowCount = majorDiagonalColumnIndexAtFirstRow >= 0 ? 0 : Math.abs(majorDiagonalColumnIndexAtFirstRow);
+      let colCount = majorDiagonalColumnIndexAtFirstRow >= 0 ? majorDiagonalColumnIndexAtFirstRow : 0;
+      let diagSize = this.attributes.n - Math.abs(majorDiagonalColumnIndexAtFirstRow);
+      for (let diagCount = 0; diagCount < diagSize; diagCount++) {
+        if (this.attributes[rowCount][colCount] === 1) {
+          counter++;
+        }
+        rowCount++;
+        colCount++;
+      }
+      
+      if (counter > 1) {
+        return true;
+      }
       return false; // fixme
     },
 
@@ -124,6 +194,21 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
+      let counter = 0;
+      let rowCount = 0;
+      let colCount = this.attributes.n - 1;
+      if (minorDiagonalColumnIndexAtFirstRow === 3) {
+        while (colCount >= 0 && rowCount < this.attributes.n) {
+          if (this.attributes[rowCount][colCount] === 1) {
+            counter++;
+          }
+          rowCount++;
+          colCount--;
+        }
+      }
+      if (counter > 1) {
+        return true;
+      }
       return false; // fixme
     },
 
