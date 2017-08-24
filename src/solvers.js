@@ -16,11 +16,18 @@
 
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
-  
+  let solution = [];
+  let matrix = new Board({n: n});
+  console.log(matrix);
+  var rootMatrix = new RookTree(matrix);
+  console.log(rootMatrix.children, 'test');
+  rootMatrix.makeDecision(matrix);
+  console.log(matrix);
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  
   return solution;
 };
+
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
@@ -45,3 +52,42 @@ window.countNQueensSolutions = function(n) {
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
+
+var RookTree = function (matrix) {
+  this.matrix = matrix;
+  this.children = [];
+  // var newMatrix = new Board(matrix);
+  // newMatrix.children = [];
+};
+
+RookTree.prototype = Object.create(Board.prototype);
+RookTree.prototype.constructor = RookTree;
+
+
+RookTree.prototype.addChild = function(matrix) {
+  var node = new RookTree(matrix);
+  this.children.push(node);
+  // if ()
+  
+  // addDecision()
+};
+
+
+RookTree.prototype.makeDecision = function(matrix) {
+  var n = matrix.attributes.n;
+  for (var rowCount = 0; rowCount < n; rowCount++) {
+    for (var colCount = 0; colCount < n; colCount++) {
+      var currentPos = matrix.attributes[rowCount][colCount];
+      if (currentPos === 0) {
+        matrix.attributes[rowCount][colCount] = 1;
+        if (!matrix.hasAnyRooksConflicts()) {
+          this.addChild(matrix);
+        }
+        matrix.attributes[rowCount][colCount] = 0;        
+      }
+    }
+  }
+};
+
+
+
