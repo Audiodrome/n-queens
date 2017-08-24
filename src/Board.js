@@ -30,7 +30,6 @@
     },
 
     _getFirstRowColumnIndexForMajorDiagonalOn: function(rowIndex, colIndex) {
-      console.log('Column', colIndex, 'row', rowIndex, 'delta', colIndex-rowIndex)
       return colIndex - rowIndex;
     },
 
@@ -46,6 +45,8 @@
       return (
         // this.hasAnyRowConflicts() ||
         // this.hasAnyColConflicts() ||
+        // this.hasAnyMajorDiagonalConflicts() ||
+        this.hasAnyMinorDiagonalConflicts() ||
         this.hasRowConflictAt(rowIndex) ||
         this.hasColConflictAt(colIndex) ||
         this.hasMajorDiagonalConflictAt(this._getFirstRowColumnIndexForMajorDiagonalOn(rowIndex, colIndex)) ||
@@ -184,6 +185,16 @@
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
+      for (let i = 0; i < this.attributes.n - 1; i++) {
+        if (i !== 0) {
+          if (this.hasMajorDiagonalConflictAt(-i)) {
+            return true;
+          }
+        }
+        if (this.hasMajorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
       return false; // fixme
     },
 
@@ -195,16 +206,17 @@
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
       let counter = 0;
-      let rowCount = 0;
-      let colCount = this.attributes.n - 1;
-      if (minorDiagonalColumnIndexAtFirstRow === 3) {
-        while (colCount >= 0 && rowCount < this.attributes.n) {
-          if (this.attributes[rowCount][colCount] === 1) {
-            counter++;
-          }
-          rowCount++;
-          colCount--;
+      let idx = minorDiagonalColumnIndexAtFirstRow;
+      let midPoint = this.attributes.n - 1;
+      let rowCount = idx <= midPoint ? 0 : idx - midPoint;
+      let colCount = idx <= midPoint ? idx : midPoint;
+      let diagSize = idx <= midPoint ? idx + 1 : this.attributes.n - (idx - midPoint); //if index <= midpoint index : n - (index - midpoint)
+      for (var diagCount = 0; diagCount < diagSize; diagCount++) {
+        if (this.attributes[rowCount][colCount] === 1) {
+          counter++;
         }
+        rowCount++;
+        colCount--;
       }
       if (counter > 1) {
         return true;
@@ -214,6 +226,13 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+      let midpoint = this.attributes.n * 2;
+      let last = midpoint * 2;
+      for (let i = 1; i < last; i++) {
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
       return false; // fixme
     }
 
