@@ -80,42 +80,39 @@
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
       // console.log(this.attributes[rowIndex]);
-      var counter = 0;
-      this.attributes[rowIndex].forEach((piece) => {
-        if (piece === 1) {
-          counter += 1;
-        }
-        // console.log(counter);
-      });
-      if (counter > 1) {
-        return true;
-      }
-      // console.log(this.attributes);
-      // console.log(this.attributes);
-      // var board = this.attributes;
       // var counter = 0;
-      // for (var i = 0; i < board[rowIndex].length; i++) {        
-      //   if (board[rowIndex][i] === 1) { counter++; }
-      //   if (counter > 1) { return true; }            
+      // this.attributes[rowIndex].forEach((piece) => {
+      //   if (piece === 1) {
+      //     counter += 1;
+      //   }
+      //   // console.log(counter);
+      // });
+      // if (counter > 1) {
+      //   return true;
       // }
+
+      // console.log(this.attributes);
+      // console.log(this.attributes);
+      var board = this.attributes;
+      var counter = 0;
+      var row = this.get(rowIndex);
+      for (var i = 0; i < row.length; i++) {        
+        counter += row[i];
+        // if (counter > 1) { return true; }            
+      }
       
-      return false; // fixme
+      // return false; // fixme
+      return counter > 1;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-
-      var flag = false;
-      for (var key in this.attributes) {
-        key = parseInt(key);
-        if (key >= 0) {
-          if (this.hasRowConflictAt(key)) {
-            return true;
-          }
-          // return this.hasRowConflictAt(key);
+      var n = this.attributes.n;
+      for (var count = 0; count < n; count++) {
+        if (this.hasRowConflictAt(count)) {
+          return true;
         } 
       }
-  
       return false; // fixme
     },
 
@@ -129,19 +126,18 @@
       
       var boardObj = this;
       var counter = 0;
-      Object.keys(this.attributes).forEach((row) => {
-        if (boardObj.attributes[row][colIndex] === 1) { counter += 1; }
-      });
+      // Object.keys(this.attributes).forEach((row) => {
+      //   if (boardObj.attributes[row][colIndex] === 1) { counter += 1; }
+      // });
       
-      if (counter > 1) { return true; }
+      // if (counter > 1) { return true; }
       
-      // var board = this.attributes;
-      // var counter = 0;
-      // for (var i = 0; i < this.attributes.n; i++) {
-      //   if (board[i][colIndex] === 1) { counter += 1; }
-      //   if (counter > 1) { return true; }  
-      // }
-      return false; // fixme
+      var board = this.attributes;
+      var counter = 0;
+      for (var i = 0; i < this.attributes.n; i++) {
+        if (board[i][colIndex] === 1) { counter += 1; }
+      }
+      return counter > 1; // fixme
     },
 
     // test if any columns on this board contain conflicts
@@ -162,9 +158,10 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       let counter = 0;
-      let rowCount = majorDiagonalColumnIndexAtFirstRow >= 0 ? 0 : Math.abs(majorDiagonalColumnIndexAtFirstRow);
-      let colCount = majorDiagonalColumnIndexAtFirstRow >= 0 ? majorDiagonalColumnIndexAtFirstRow : 0;
-      let diagSize = this.attributes.n - Math.abs(majorDiagonalColumnIndexAtFirstRow);
+      let index = majorDiagonalColumnIndexAtFirstRow;
+      let rowCount = index >= 0 ? 0 : Math.abs(index);
+      let colCount = index >= 0 ? index : 0;
+      let diagSize = this.attributes.n - Math.abs(index);
       for (let diagCount = 0; diagCount < diagSize; diagCount++) {
         if (this.attributes[rowCount][colCount] === 1) {
           counter++;
